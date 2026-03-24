@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Admin — Photography-life4me</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0a0a0a;color:#c8c0b4;font-family:monospace;min-height:100vh}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:220px;background:#0d0d0d;border-right:1px solid #1e1e1e;padding:2rem 0;flex-shrink:0;position:fixed;top:0;left:0;height:100vh;overflow-y:auto}
+.sidebar-logo{font-size:.8rem;letter-spacing:.2em;color:#d4a853;padding:0 1.5rem 2rem;border-bottom:1px solid #1e1e1e;margin-bottom:1rem;text-transform:uppercase}
+.sidebar-logo span{display:block;font-size:.58rem;color:#444;margin-top:.3rem}
+.nav-item{display:flex;align-items:center;gap:.75rem;padding:.8rem 1.5rem;cursor:pointer;transition:all .2s;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:#555;border-left:2px solid transparent;user-select:none}
+.nav-item:hover{background:#131313;color:#c8c0b4}
+.nav-item.active{background:#141400;color:#d4a853;border-left-color:#d4a853}
+.badge{margin-left:auto;background:#c0392b;color:#fff;font-size:.55rem;padding:.15rem .45rem;border-radius:10px;display:none}
+.badge.show{display:inline}
+.main{margin-left:220px;padding:2rem;flex:1}
+.stats-row{display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.stat-card{background:#111;border:1px solid #1e1e1e;padding:1.2rem 1.5rem;flex:1;min-width:110px;border-radius:3px}
+.stat-card-n{font-size:2rem;color:#d4a853;font-weight:bold;line-height:1}
+.stat-card-l{font-size:.58rem;letter-spacing:.12em;color:#444;text-transform:uppercase;margin-top:.3rem}
+.card{background:#111;border:1px solid #1e1e1e;padding:1.8rem;border-radius:3px;margin-bottom:1.5rem}
+.page-header{margin-bottom:1.5rem;padding-bottom:1.2rem;border-bottom:1px solid #1e1e1e;display:flex;align-items:center;justify-content:space-between}
+.page-title{color:#f0ece6;font-size:1rem;letter-spacing:.15em;text-transform:uppercase}
+.page-sub{font-size:.62rem;color:#444;margin-top:.3rem}
+label{display:block;font-size:.62rem;letter-spacing:.15em;color:#555;text-transform:uppercase;margin:.9rem 0 .35rem}
+input,select,textarea{width:100%;background:#0a0a0a;border:1px solid #222;color:#f0ece6;padding:.75rem 1rem;font-family:monospace;font-size:.82rem;outline:none;transition:border-color .3s;border-radius:2px}
+input:focus,select:focus,textarea:focus{border-color:#d4a853}
+input[type=file]{padding:.4rem}
+input[type=checkbox]{width:auto;margin-right:.5rem}
+textarea{resize:vertical}
+select{cursor:pointer}
+
+/* BUTTONS */
+.btn{background:#d4a853;color:#080808;border:none;padding:.75rem 1.8rem;font-family:monospace;font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;transition:all .3s;border-radius:2px}
+.btn:hover{background:#f0ece6}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-ghost{background:transparent;color:#777;border:1px solid #222;padding:.6rem 1.2rem;font-family:monospace;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .3s;border-radius:2px}
+.btn-ghost:hover{border-color:#d4a853;color:#d4a853}
+.btn-danger{background:#1a0808;color:#d07070;border:1px solid #3a1a1a;padding:.45rem .9rem;font-family:monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .3s;border-radius:2px}
+.btn-danger:hover{background:#3a1a1a;color:#ff9090}
+.btn-edit{background:#081018;color:#60a0cc;border:1px solid #1a3050;padding:.45rem .9rem;font-family:monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .3s;border-radius:2px}
+.btn-edit:hover{background:#1a3050}
+.btn-hero{background:#180a00;color:#cc8820;border:1px solid #3a2200;padding:.45rem .9rem;font-family:monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .3s;border-radius:2px}
+.btn-hero:hover{background:#3a2200}
+.btn-sm{padding:.4rem .85rem;font-size:.6rem}
+.btn-success{background:#0d2a0d;color:#70c070;border:1px solid #1a4a1a;padding:.45rem .9rem;font-family:monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .3s;border-radius:2px}
+.btn-success:hover{background:#1a4a1a}
+
+.msg-alert{padding:.7rem 1rem;border-radius:2px;margin-top:.8rem;font-size:.78rem}
+.msg-alert.ok{background:#0d1a0d;color:#70c070;border:1px solid #1a4a1a}
+.msg-alert.err{background:#1a0d0d;color:#c07070;border:1px solid #4a1a1a}
+
+/* CATEGORIES */
+.cat-options{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.5rem}
+.cat-option{display:inline-flex;align-items:center;gap:.4rem;background:#0d0d0d;border:1px solid #222;padding:.4rem .85rem;cursor:pointer;transition:all .25s;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;user-select:none;border-radius:2px}
+.cat-option input{width:auto;margin:0;accent-color:#d4a853}
+.cat-option:has(input:checked){border-color:#d4a853;background:#141000;color:#d4a853}
+.cat-custom{display:flex;gap:.5rem;margin-top:.5rem}
+.cat-custom input{flex:1;margin:0}
+.cat-custom button{background:#222;color:#c8c0b4;border:none;padding:.75rem 1rem;font-family:monospace;font-size:.7rem;cursor:pointer;white-space:nowrap;transition:all .3s;border-radius:2px}
+.cat-custom button:hover{background:#d4a853;color:#080808}
+
+/* PROGRESS */
+.progress{height:3px;background:#1e1e1e;border-radius:2px;margin-top:.8rem;overflow:hidden;display:none}
+.progress-bar{height:100%;background:#d4a853;width:0%;transition:width .3s}
+
+/* PHOTO GRID */
+.photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:1rem}
+.photo-card{background:#0d0d0d;border:1px solid #1e1e1e;overflow:hidden;border-radius:3px;transition:border-color .25s;position:relative}
+.photo-card:hover{border-color:#333}
+.hero-badge{position:absolute;top:.4rem;left:.4rem;background:#d4a853;color:#080808;font-size:.52rem;letter-spacing:.08em;padding:.18rem .45rem;border-radius:2px;text-transform:uppercase;font-weight:bold;z-index:2}
+.feat-badge{position:absolute;top:.4rem;right:.4rem;background:#1a3a1a;color:#70c070;border:1px solid #2a5a2a;font-size:.52rem;letter-spacing:.08em;padding:.18rem .45rem;border-radius:2px;text-transform:uppercase;z-index:2}
+.photo-card img{width:100%;height:130px;object-fit:cover;display:block;filter:brightness(.82);transition:filter .3s}
+.photo-card:hover img{filter:brightness(.95)}
+.photo-card-info{padding:.75rem}
+.photo-card-title{font-size:.78rem;color:#f0ece6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.photo-card-cat{font-size:.58rem;color:#d4a853;letter-spacing:.1em;text-transform:uppercase;margin-top:.2rem}
+.photo-card-actions{display:flex;gap:.3rem;margin-top:.6rem;flex-wrap:wrap}
+.search-bar{display:flex;gap:.8rem;margin-bottom:1.5rem;align-items:center;flex-wrap:wrap}
+.search-bar input{max-width:250px;margin:0}
+
+/* MESSAGES */
+.inbox-table{width:100%;border-collapse:collapse}
+.inbox-table th{font-size:.6rem;letter-spacing:.15em;color:#444;text-transform:uppercase;padding:.7rem 1rem;text-align:left;border-bottom:1px solid #1a1a1a;background:#0d0d0d}
+.inbox-table td{padding:.85rem 1rem;border-bottom:1px solid #141414;font-size:.8rem;vertical-align:top;cursor:pointer}
+.inbox-table tr:hover td{background:#0d0d0d}
+.inbox-table tr.unread td{background:#0f0f0a}
+.msg-name{color:#c8c0b4;font-size:.8rem}
+.msg-name.bold{color:#f0ece6;font-weight:bold}
+.msg-email{font-size:.62rem;color:#444;margin-top:.2rem}
+.msg-preview{font-size:.68rem;color:#444;margin-top:.2rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}
+.msg-date{font-size:.6rem;color:#333;white-space:nowrap}
+.msg-status{display:inline-block;font-size:.56rem;letter-spacing:.08em;text-transform:uppercase;padding:.2rem .5rem;border-radius:10px}
+.msg-status.unread{background:#1a1500;color:#d4a853;border:1px solid #3a3000}
+.msg-status.read{background:#111;color:#333;border:1px solid #1e1e1e}
+.msg-status.replied{background:#0d1a0d;color:#70c070;border:1px solid #1a4a1a}
+.inbox-empty{text-align:center;padding:3rem;color:#333;font-size:.85rem;font-style:italic}
+.filter-tabs-msg{display:flex;gap:.5rem;margin-bottom:1.5rem}
+.ftm{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:#444;background:none;border:1px solid #1e1e1e;padding:.4rem .9rem;cursor:pointer;transition:all .25s;border-radius:2px;font-family:monospace}
+.ftm.active,.ftm:hover{color:#080808;background:#d4a853;border-color:#d4a853}
+
+/* SETTINGS */
+.setting-row{display:flex;align-items:center;justify-content:space-between;padding:1.2rem 0;border-bottom:1px solid #1a1a1a;gap:2rem}
+.setting-row:last-child{border-bottom:none}
+.setting-info{flex:1}
+.setting-label{font-size:.8rem;color:#f0ece6;margin-bottom:.3rem}
+.setting-desc{font-size:.65rem;color:#555;line-height:1.5}
+.setting-control{flex-shrink:0;min-width:200px}
+.setting-control select,.setting-control input{margin:0;width:100%}
+
+/* BACKGROUND PREVIEWS */
+.bg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin-top:1rem}
+.bg-swatch{border:2px solid transparent;border-radius:3px;overflow:hidden;cursor:pointer;transition:all .25s;position:relative}
+.bg-swatch.active{border-color:#d4a853}
+.bg-swatch-inner{height:70px;display:flex;align-items:center;justify-content:center;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.bg-swatch-name{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:#555;text-align:center;padding:.3rem;background:#0d0d0d}
+.bg-swatch.active .bg-swatch-name{color:#d4a853}
+
+/* CHARACTER PREVIEWS */
+.char-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem;margin-top:1rem}
+.char-card{border:2px solid transparent;border-radius:3px;overflow:hidden;cursor:pointer;transition:all .25s;background:#0d0d0d;text-align:center;padding:1rem .5rem}
+.char-card.active{border-color:#d4a853}
+.char-card canvas{display:block;margin:0 auto}
+.char-name{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:#555;margin-top:.5rem}
+.char-card.active .char-name{color:#d4a853}
+
+/* FEATURED SECTION */
+.feat-manager{display:grid;grid-template-columns:1fr 1fr;gap:2rem}
+.feat-panel{background:#0d0d0d;border:1px solid #1a1a1a;border-radius:3px;padding:1.2rem}
+.feat-panel-title{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:#d4a853;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between}
+.feat-panel-title span{color:#555;font-size:.6rem}
+.feat-item{display:flex;align-items:center;gap:.6rem;padding:.5rem;border-bottom:1px solid #141414;transition:background .2s;cursor:pointer}
+.feat-item:hover{background:#111}
+.feat-item:last-child{border-bottom:none}
+.feat-item img{width:44px;height:44px;object-fit:cover;filter:brightness(.8);flex-shrink:0;border-radius:2px}
+.feat-item-info{flex:1;min-width:0}
+.feat-item-title{font-size:.72rem;color:#f0ece6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.feat-item-cat{font-size:.6rem;color:#555;letter-spacing:.08em;text-transform:uppercase;margin-top:.15rem}
+.feat-item-btn{flex-shrink:0}
+.feat-order{font-size:.65rem;color:#d4a853;min-width:20px;text-align:center}
+
+/* WATERMARK OPTIONS */
+.wm-box{background:#0d0d00;border:1px solid #2a2200;padding:1.2rem;border-radius:3px;margin-top:1rem}
+.wm-box-title{font-size:.65rem;letter-spacing:.2em;color:#d4a853;text-transform:uppercase;margin-bottom:1rem}
+.wm-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.wm-preview{background:#080808;border:1px solid #1e1e1e;padding:.6rem 1rem;font-size:.75rem;color:#888;margin-top:.5rem;font-style:italic;border-radius:2px}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:100;display:none;align-items:center;justify-content:center;padding:1rem}
+.modal-bg.open{display:flex}
+.modal{background:#111;border:1px solid #2a2a2a;padding:2rem;border-radius:4px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;padding-bottom:1.2rem;border-bottom:1px solid #1e1e1e}
+.modal-title{color:#d4a853;font-size:.9rem;letter-spacing:.15em;text-transform:uppercase}
+.modal-x{background:none;border:none;color:#444;font-size:1.2rem;cursor:pointer;line-height:1;transition:color .2s}
+.modal-x:hover{color:#f0ece6}
+.msg-field{margin-bottom:1.2rem}
+.msg-field-label{font-size:.6rem;letter-spacing:.18em;color:#444;text-transform:uppercase;margin-bottom:.4rem}
+.msg-field-val{font-size:.92rem;color:#f0ece6;line-height:1.75;padding:.8rem 1rem;background:#0a0a0a;border:1px solid #1e1e1e;border-radius:2px}
+.reply-area{margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid #1e1e1e}
+.reply-area textarea{height:110px;margin-top:.5rem}
+.modal-footer{display:flex;gap:.8rem;margin-top:1.5rem;justify-content:flex-end;flex-wrap:wrap}
+
+.tab-content{display:none}
+.tab-content.active{display:block}
+.key-bar{background:#0d0d0d;border:1px solid #1a1a1a;padding:1rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem;border-radius:3px}
+.key-bar span{font-size:.62rem;letter-spacing:.15em;color:#444;text-transform:uppercase;white-space:nowrap}
+.key-bar input{max-width:200px;margin:0;padding:.5rem .8rem;font-size:.82rem}
+</style>
+</head>
+<body>
+
+<!-- PHOTO EDIT MODAL -->
+<div class="modal-bg" id="photoModal">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div class="modal-title">✏️ Edit Photo</div>
+      <button class="modal-x" onclick="closePhotoModal()">✕</button>
+    </div>
+    <img id="modalImg" src="" alt="" style="width:100%;height:180px;object-fit:cover;filter:brightness(.8);display:block;margin-bottom:1.5rem;border-radius:2px">
+    <input type="hidden" id="editId">
+    <label>Title</label>
+    <input type="text" id="editTitle">
+    <label>Categories</label>
+    <div class="cat-options" id="editCatOptions">
+      <label class="cat-option"><input type="checkbox" value="Nature"> Nature</label>
+      <label class="cat-option"><input type="checkbox" value="Macro"> Macro</label>
+      <label class="cat-option"><input type="checkbox" value="Landscape"> Landscape</label>
+      <label class="cat-option"><input type="checkbox" value="Street"> Street</label>
+      <label class="cat-option"><input type="checkbox" value="Abstract"> Abstract</label>
+      <label class="cat-option"><input type="checkbox" value="Portrait"> Portrait</label>
+    </div>
+    <div class="cat-custom">
+      <input type="text" id="editNewCat" placeholder="Nai category...">
+      <button onclick="addCat('editCatOptions','editNewCat')">+ Add</button>
+    </div>
+    <label>Description</label>
+    <textarea id="editDesc" style="height:80px" placeholder="Photo ki story..."></textarea>
+    <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;margin-top:1rem">
+      <input type="checkbox" id="editFeatured" style="width:auto;margin:0"> ⭐ Hero Photo
+    </label>
+    <div id="editMsg"></div>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closePhotoModal()">Cancel</button>
+      <button class="btn" onclick="saveEdit()">Save →</button>
+    </div>
+  </div>
+</div>
+
+<!-- MESSAGE MODAL -->
+<div class="modal-bg" id="msgModal">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div class="modal-title">📨 Message</div>
+      <button class="modal-x" onclick="closeMsgModal()">✕</button>
+    </div>
+    <div class="msg-field"><div class="msg-field-label">From</div><div class="msg-field-val" id="mdName"></div></div>
+    <div class="msg-field"><div class="msg-field-label">Email</div><div class="msg-field-val" id="mdEmail"></div></div>
+    <div class="msg-field"><div class="msg-field-label">Subject</div><div class="msg-field-val" id="mdSubject"></div></div>
+    <div class="msg-field"><div class="msg-field-label">Message</div><div class="msg-field-val" id="mdMsg" style="white-space:pre-wrap"></div></div>
+    <div class="msg-field" id="prevReplyWrap" style="display:none">
+      <div class="msg-field-label">Aapka Purana Reply</div>
+      <div class="msg-field-val" id="prevReply" style="color:#70c070;white-space:pre-wrap"></div>
+    </div>
+    <div class="reply-area">
+      <div class="msg-field-label">✏️ Reply</div>
+      <textarea id="replyText" placeholder="Reply likhein..."></textarea>
+    </div>
+    <div id="msgModalAlert"></div>
+    <div class="modal-footer">
+      <button class="btn-danger btn-sm" onclick="deleteMsgModal()">🗑 Delete</button>
+      <button class="btn-ghost" onclick="closeMsgModal()">Cancel</button>
+      <button class="btn" onclick="sendReply()">Send Reply →</button>
+    </div>
+    <input type="hidden" id="mdId">
+    <input type="hidden" id="mdEmailH">
+  </div>
+</div>
+
+<div class="layout">
+  <div class="sidebar">
+    <div class="sidebar-logo">Admin Panel<span>photography-life4me</span></div>
+    <div class="nav-item active" onclick="switchTab('photos',this)">📷 &nbsp;Photos</div>
+    <div class="nav-item" onclick="switchTab('upload',this)">⬆️ &nbsp;Upload</div>
+    <div class="nav-item" onclick="switchTab('featured',this)">⭐ &nbsp;Featured Work</div>
+    <div class="nav-item" onclick="switchTab('messages',this)">✉️ &nbsp;Messages <span class="badge" id="unreadBadge">0</span></div>
+    <div class="nav-item" onclick="switchTab('settings',this)">⚙️ &nbsp;Settings</div>
+  </div>
+
+  <div class="main">
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-card-n" id="sPhotos">—</div><div class="stat-card-l">Photos</div></div>
+      <div class="stat-card"><div class="stat-card-n" id="sFeat">—</div><div class="stat-card-l">Featured</div></div>
+      <div class="stat-card"><div class="stat-card-n" id="sMsgs">—</div><div class="stat-card-l">Messages</div></div>
+      <div class="stat-card"><div class="stat-card-n" id="sUnread">—</div><div class="stat-card-l">Unread</div></div>
+    </div>
+
+    <div class="key-bar">
+      <span>Admin Key:</span>
+      <input type="password" id="adminKey" value="Sagar9889">
+    </div>
+
+    <!-- ─── PHOTOS TAB ─── -->
+    <div class="tab-content active" id="tab-photos">
+      <div class="page-header">
+        <div><div class="page-title">📷 All Photos</div><div class="page-sub">Click to edit • ⭐ = Hero</div></div>
+        <button class="btn-ghost btn-sm" onclick="loadPhotos()">↻ Refresh</button>
+      </div>
+      <div class="search-bar">
+        <input type="text" id="photoSearch" placeholder="Search..." oninput="filterPhotos()" style="max-width:250px;margin:0">
+      </div>
+      <div class="photo-grid" id="photosGrid"><p style="color:#333;font-size:.8rem">Loading...</p></div>
+    </div>
+
+    <!-- ─── UPLOAD TAB ─── -->
+    <div class="tab-content" id="tab-upload">
+      <div class="page-header">
+        <div><div class="page-title">⬆️ Upload Photo</div><div class="page-sub">Watermark options niche</div></div>
+      </div>
+      <div class="card">
+        <label>Photo (JPG/PNG/WEBP — max 15MB)</label>
+        <input type="file" id="photoFile" accept="image/jpeg,image/png,image/webp" onchange="previewFile()">
+        <img id="filePreview" src="" style="display:none;width:100%;max-height:200px;object-fit:contain;margin-top:.8rem;border-radius:2px">
+        <label>Title</label>
+        <input type="text" id="photoTitle" placeholder="e.g. Floating Fern">
+        <label>Categories</label>
+        <div class="cat-options" id="uploadCats">
+          <label class="cat-option"><input type="checkbox" value="Nature"> Nature</label>
+          <label class="cat-option"><input type="checkbox" value="Macro"> Macro</label>
+          <label class="cat-option"><input type="checkbox" value="Landscape"> Landscape</label>
+          <label class="cat-option"><input type="checkbox" value="Street"> Street</label>
+          <label class="cat-option"><input type="checkbox" value="Abstract"> Abstract</label>
+          <label class="cat-option"><input type="checkbox" value="Portrait"> Portrait</label>
+        </div>
+        <div class="cat-custom">
+          <input type="text" id="uploadNewCat" placeholder="Nai category...">
+          <button onclick="addCat('uploadCats','uploadNewCat')">+ Add</button>
+        </div>
+        <label>Description</label>
+        <textarea id="photoDesc" style="height:80px" placeholder="Is photo ki story..."></textarea>
+        <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;margin-top:1rem">
+          <input type="checkbox" id="isFeatured" style="width:auto;margin:0"> ⭐ Hero Photo banao
+        </label>
+        <div class="wm-box">
+          <div class="wm-box-title">💧 Watermark Options
+            <label style="margin-left:auto;display:inline-flex;align-items:center;gap:.4rem;cursor:pointer;font-size:.62rem;color:#888">
+              <input type="checkbox" id="hasWatermark" checked style="width:auto;margin:0;accent-color:#d4a853"> Enable
+            </label>
+          </div>
+          <div class="wm-row">
+            <div><label>Text</label><input type="text" id="wmText" value="Photography-life4me"></div>
+            <div><label>Style</label>
+              <select id="wmFont">
+                <option value="bold">Bold</option>
+                <option value="subtle">Subtle</option>
+                <option value="strong">Strong</option>
+                <option value="italic">Soft</option>
+              </select>
+            </div>
+          </div>
+          <div><label>Position</label>
+            <select id="wmPos">
+              <option value="bottom-right">Niche Right ↘</option>
+              <option value="bottom-left">Niche Left ↙</option>
+              <option value="top-right">Upar Right ↗</option>
+              <option value="top-left">Upar Left ↖</option>
+              <option value="center">Center</option>
+            </select>
+          </div>
+          <div class="wm-preview" id="wmPreview">Preview: "Photography-life4me" — Niche Right pe lagega</div>
+        </div>
+        <div class="progress" id="progressWrap"><div class="progress-bar" id="progressBar"></div></div>
+        <button class="btn" style="margin-top:1.5rem" onclick="uploadPhoto()" id="uploadBtn">Upload →</button>
+        <div id="uploadMsg"></div>
+      </div>
+    </div>
+
+    <!-- ─── FEATURED WORK TAB ─── -->
+    <div class="tab-content" id="tab-featured">
+      <div class="page-header">
+        <div><div class="page-title">⭐ Featured Work</div><div class="page-sub">Home page pe kaunsi photos dikhein — aap control karo</div></div>
+        <button class="btn" onclick="saveFeatured()">Save Changes →</button>
+      </div>
+      <div class="feat-manager">
+        <!-- LEFT: Available photos -->
+        <div class="feat-panel">
+          <div class="feat-panel-title">
+            All Photos
+            <span id="availCount">0 photos</span>
+          </div>
+          <div style="margin-bottom:.8rem">
+            <input type="text" id="featSearch" placeholder="Search..." style="margin:0;padding:.5rem .8rem;font-size:.75rem" oninput="filterAvail()">
+          </div>
+          <div id="availList" style="max-height:450px;overflow-y:auto"></div>
+        </div>
+        <!-- RIGHT: Featured photos -->
+        <div class="feat-panel">
+          <div class="feat-panel-title">
+            Featured (Home Page)
+            <span id="featCount2">0 selected</span>
+          </div>
+          <div id="featList" style="max-height:450px;overflow-y:auto">
+            <p style="color:#333;font-size:.75rem;padding:1rem">Koi photo featured nahi hai. Left side se add karo →</p>
+          </div>
+        </div>
+      </div>
+      <div id="featMsg" style="margin-top:1rem"></div>
+    </div>
+
+    <!-- ─── MESSAGES TAB ─── -->
+    <div class="tab-content" id="tab-messages">
+      <div class="page-header">
+        <div><div class="page-title">✉️ Messages</div><div class="page-sub">Click to read & reply</div></div>
+        <button class="btn-ghost btn-sm" onclick="loadMessages()">↻ Refresh</button>
+      </div>
+      <div class="filter-tabs-msg">
+        <button class="ftm active" onclick="filterMsgs('all',this)">All</button>
+        <button class="ftm" onclick="filterMsgs('unread',this)">Unread</button>
+        <button class="ftm" onclick="filterMsgs('replied',this)">Replied</button>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <table class="inbox-table">
+          <thead><tr><th>From</th><th>Subject</th><th>Preview</th><th>Date</th><th>Status</th><th></th></tr></thead>
+          <tbody id="msgBody"><tr><td colspan="6" class="inbox-empty">Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ─── SETTINGS TAB ─── -->
+    <div class="tab-content" id="tab-settings">
+      <div class="page-header">
+        <div><div class="page-title">⚙️ Website Settings</div><div class="page-sub">Changes live ho jaayenge website pe</div></div>
+      </div>
+
+      <!-- BACKGROUND -->
+      <div class="card">
+        <div class="card-title">🎨 Background Style</div>
+        <div class="bg-grid" id="bgGrid">
+          <div class="bg-swatch active" data-bg="dark-grain" onclick="selectBg(this)">
+            <div class="bg-swatch-inner" style="background:#0a0a0a">Current</div>
+            <div class="bg-swatch-name">Dark Grain</div>
+          </div>
+          <div class="bg-swatch" data-bg="deep-navy" onclick="selectBg(this)">
+            <div class="bg-swatch-inner" style="background:linear-gradient(135deg,#070b14,#0a0f1e)">Navy</div>
+            <div class="bg-swatch-name">Deep Navy</div>
+          </div>
+          <div class="bg-swatch" data-bg="warm-dark" onclick="selectBg(this)">
+            <div class="bg-swatch-inner" style="background:linear-gradient(135deg,#0d0a07,#110e08)">Warm</div>
+            <div class="bg-swatch-name">Warm Dark</div>
+          </div>
+          <div class="bg-swatch" data-bg="dark-forest" onclick="selectBg(this)">
+            <div class="bg-swatch-inner" style="background:linear-gradient(135deg,#050a07,#080e0a)">Forest</div>
+            <div class="bg-swatch-name">Dark Forest</div>
+          </div>
+          <div class="bg-swatch" data-bg="vignette" onclick="selectBg(this)">
+            <div class="bg-swatch-inner" style="background:radial-gradient(ellipse at center,#141414,#050505)">Vignette</div>
+            <div class="bg-swatch-name">Vignette</div>
+          </div>
+          <div class="bg-swatch" data-bg="dark-purple" onclick="selectBg(this)">
+            <div class="bg-swatch-inner" style="background:linear-gradient(135deg,#0a0810,#0d0a18)">Purple</div>
+            <div class="bg-swatch-name">Dark Purple</div>
+          </div>
+          <div class="bg-swatch" data-bg="geometric" onclick="selectBg(this)">
+            <div class="bg-swatch-inner" style="background:#090909">Grid</div>
+            <div class="bg-swatch-name">Geometric</div>
+          </div>
+          <div class="bg-swatch" data-bg="deep-red" onclick="selectBg(this)">
+            <div class="bg-swatch-inner" style="background:linear-gradient(135deg,#0d0707,#110808)">Red</div>
+            <div class="bg-swatch-name">Deep Red</div>
+          </div>
+          <div class="bg-swatch" data-bg="concrete" onclick="selectBg(this)">
+            <div class="bg-swatch-inner" style="background:#0c0c0c">Stone</div>
+            <div class="bg-swatch-name">Concrete</div>
+          </div>
+        </div>
+        <button class="btn btn-sm" style="margin-top:1rem" onclick="saveSetting('background')">Apply Background →</button>
+        <div id="bgMsg"></div>
+      </div>
+
+      <!-- LOADING SCREEN -->
+      <div class="card">
+        <div class="card-title">🔴 Loading Screen — Lens Options</div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Lens Color</div>
+            <div class="setting-desc">Loading screen pe lens ka inner color</div>
+          </div>
+          <div class="setting-control">
+            <select id="lensColor">
+              <option value="dark">Dark (Default)</option>
+              <option value="gold">Golden ✨</option>
+              <option value="blue">Deep Blue 💙</option>
+              <option value="red">Dark Red 🔴</option>
+              <option value="green">Dark Green 🟢</option>
+            </select>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Iris Open Speed</div>
+            <div class="setting-desc">Lens aperture kitni tezi se khuleg</div>
+          </div>
+          <div class="setting-control">
+            <select id="lensSpeed">
+              <option value="normal">Normal</option>
+              <option value="slow">Slow — Cinematic 🎬</option>
+              <option value="fast">Fast ⚡</option>
+            </select>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Flare Color</div>
+            <div class="setting-desc">Lens pe chamakne wali flare ki color</div>
+          </div>
+          <div class="setting-control">
+            <select id="lensFlare">
+              <option value="gold">Golden (Default)</option>
+              <option value="white">White</option>
+              <option value="blue">Blue</option>
+              <option value="none">None (Off)</option>
+            </select>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Intro Duration</div>
+            <div class="setting-desc">Loading screen kitni der tak dikhega</div>
+          </div>
+          <div class="setting-control">
+            <select id="introDuration">
+              <option value="3000">3 seconds (Default)</option>
+              <option value="2000">2 seconds (Quick)</option>
+              <option value="4000">4 seconds (Long)</option>
+              <option value="5000">5 seconds (Very Long)</option>
+            </select>
+          </div>
+        </div>
+        <!-- Lens Preview -->
+        <div style="margin-top:1.5rem;padding:1rem;background:#080808;border:1px solid #1a1a1a;border-radius:3px;text-align:center">
+          <div style="font-size:.62rem;letter-spacing:.2em;color:#555;text-transform:uppercase;margin-bottom:1rem">Live Preview</div>
+          <canvas id="lensPreviewCanvas" width="120" height="120" style="display:block;margin:0 auto;border-radius:50%"></canvas>
+        </div>
+        <button class="btn btn-sm" style="margin-top:1rem" onclick="saveLensSettings()">Apply Lens Settings →</button>
+        <div id="lensMsg"></div>
+      </div>
+
+<!-- SITE TITLE -->
+      <div class="card">
+        <div class="card-title">📝 Site Settings</div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-label">Site Title</div>
+            <div class="setting-desc">Nav bar aur footer mein dikhega</div>
+          </div>
+          <div class="setting-control">
+            <input type="text" id="siteTitle" value="PHOTOGRAPHY-LIFE4ME">
+          </div>
+        </div>
+        <button class="btn btn-sm" style="margin-top:1rem" onclick="saveSiteTitleSetting()">Save Settings →</button>
+        <div id="siteMsg"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const API='https://photography-life4me.infinityfreeapp.com/api.php';
+let allPhotos=[], allMsgs=[], msgFilter='all';
+let featuredIds=[], currentBg='dark-grain', currentChar='line-art';
+
+window.onload=()=>{loadPhotos();loadMessages();loadSettings();};
+
+// ── TABS
+function switchTab(tab,el){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  el.classList.add('active');
+  if(tab==='featured') loadFeaturedTab();
+  if(tab==='settings') drawCharPreviews();
+}
+
+// ── LOAD PHOTOS
+async function loadPhotos(){
+  try{
+    const data=await(await fetch(API+'?action=get_list')).json();
+    allPhotos=data.photos||[];
+    document.getElementById('sPhotos').textContent=allPhotos.length;
+    document.getElementById('sFeat').textContent=allPhotos.filter(p=>p.is_featured==1).length;
+    renderPhotos(allPhotos);
+  }catch(e){
+    document.getElementById('photosGrid').innerHTML='<p style="color:#c07070;font-size:.8rem">Error: '+e.message+'</p>';
+  }
+}
+
+function renderPhotos(photos){
+  const grid=document.getElementById('photosGrid');
+  if(!photos.length){grid.innerHTML='<p style="color:#333;font-size:.8rem">Koi photo nahi.</p>';return;}
+  grid.innerHTML=photos.map(p=>`
+    <div class="photo-card" id="card-${p.id}">
+      ${p.is_featured==1?'<div class="hero-badge">⭐ Hero</div>':''}
+      <img src="${API}?action=get_image&id=${p.id}" alt="${p.title}" loading="lazy" onerror="this.style.display='none'">
+      <div class="photo-card-info">
+        <div class="photo-card-title">${p.title}</div>
+        <div class="photo-card-cat">${p.category}</div>
+        <div class="photo-card-actions">
+          <button class="btn-edit btn-sm" onclick="openEdit(${p.id})">✏️</button>
+          <button class="btn-hero btn-sm" onclick="setHero(${p.id})" title="Hero banao">⭐</button>
+          <button class="btn-danger btn-sm" onclick="deletePhoto(${p.id},'${p.title.replace(/'/g,"\\'")}')">🗑</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function filterPhotos(){
+  const q=document.getElementById('photoSearch').value.toLowerCase();
+  renderPhotos(q?allPhotos.filter(p=>p.title.toLowerCase().includes(q)||p.category.toLowerCase().includes(q)):allPhotos);
+}
+
+async function setHero(id){
+  const fd=new FormData();fd.append('id',id);fd.append('admin_key',document.getElementById('adminKey').value);
+  const d=await(await fetch(API+'?action=set_hero',{method:'POST',body:fd})).json();
+  if(d.success) loadPhotos(); else alert('Error: '+d.error);
+}
+
+// ── EDIT
+function openEdit(id){
+  const p=allPhotos.find(x=>x.id==id);if(!p)return;
+  document.getElementById('editId').value=p.id;
+  document.getElementById('modalImg').src=API+'?action=get_image&id='+p.id;
+  document.getElementById('editTitle').value=p.title;
+  document.getElementById('editDesc').value=p.description||'';
+  document.getElementById('editFeatured').checked=p.is_featured==1;
+  const activeCats=p.category.split(',').map(c=>c.trim());
+  activeCats.forEach(cat=>{
+    if(cat&&![...document.querySelectorAll('#editCatOptions input')].find(o=>o.value===cat))
+      addCatToContainer('editCatOptions',cat);
+  });
+  document.querySelectorAll('#editCatOptions input').forEach(i=>i.checked=activeCats.includes(i.value));
+  document.getElementById('editMsg').innerHTML='';
+  document.getElementById('photoModal').classList.add('open');
+}
+function closePhotoModal(){document.getElementById('photoModal').classList.remove('open');}
+
+async function saveEdit(){
+  const id=document.getElementById('editId').value;
+  const title=document.getElementById('editTitle').value.trim()||'Untitled';
+  const desc=document.getElementById('editDesc').value.trim();
+  const featured=document.getElementById('editFeatured').checked?1:0;
+  const key=document.getElementById('adminKey').value;
+  const msgEl=document.getElementById('editMsg');
+  const cats=[...document.querySelectorAll('#editCatOptions input:checked')].map(c=>c.value);
+  if(!cats.length){showAlert(msgEl,'Kam se kam ek category!','err');return;}
+  const fd=new FormData();
+  fd.append('id',id);fd.append('title',title);fd.append('category',cats.join(', '));
+  fd.append('description',desc);fd.append('is_featured',featured);fd.append('admin_key',key);
+  const d=await(await fetch(API+'?action=update',{method:'POST',body:fd})).json();
+  if(d.success){showAlert(msgEl,'✓ Saved!','ok');setTimeout(()=>{closePhotoModal();loadPhotos();},700);}
+  else showAlert(msgEl,'✗ '+(d.error||'Error'),'err');
+}
+
+async function deletePhoto(id,title){
+  if(!confirm(`"${title}" delete karein?`))return;
+  const key=document.getElementById('adminKey').value;
+  const fd=new FormData();fd.append('id',id);fd.append('admin_key',key);
+  const d=await(await fetch(API+'?action=delete',{method:'POST',body:fd})).json();
+  if(d.success) loadPhotos(); else alert('Error: '+d.error);
+}
+
+// ── UPLOAD
+function previewFile(){
+  const file=document.getElementById('photoFile').files[0];
+  if(!file)return;
+  const prev=document.getElementById('filePreview');
+  prev.src=URL.createObjectURL(file);prev.style.display='block';
+}
+document.getElementById('wmText').addEventListener('input',updateWmPrev);
+document.getElementById('wmPos').addEventListener('change',updateWmPrev);
+document.getElementById('hasWatermark').addEventListener('change',updateWmPrev);
+function updateWmPrev(){
+  const txt=document.getElementById('wmText').value||'(empty)';
+  const pos={'bottom-right':'Niche Right ↘','bottom-left':'Niche Left ↙','top-right':'Upar Right ↗','top-left':'Upar Left ↖','center':'Center'}[document.getElementById('wmPos').value];
+  const on=document.getElementById('hasWatermark').checked;
+  document.getElementById('wmPreview').textContent=on?`"${txt}" — ${pos} pe lagega`:'Watermark disabled';
+}
+
+async function uploadPhoto(){
+  const key=document.getElementById('adminKey').value;
+  const file=document.getElementById('photoFile').files[0];
+  const title=document.getElementById('photoTitle').value||'Untitled';
+  const desc=document.getElementById('photoDesc').value;
+  const feat=document.getElementById('isFeatured').checked?'1':'0';
+  const hasWM=document.getElementById('hasWatermark').checked?'1':'0';
+  const wmText=document.getElementById('wmText').value||'Photography-life4me';
+  const wmFont=document.getElementById('wmFont').value;
+  const wmPos=document.getElementById('wmPos').value;
+  const msgEl=document.getElementById('uploadMsg');
+  const cats=[...document.querySelectorAll('#uploadCats input:checked')].map(c=>c.value);
+  if(!cats.length){showAlert(msgEl,'Kam se kam ek category!','err');return;}
+  if(!file){showAlert(msgEl,'Photo select karein!','err');return;}
+  if(file.size>15*1024*1024){showAlert(msgEl,'15MB limit!','err');return;}
+  const fd=new FormData();
+  fd.append('photo',file);fd.append('title',title);fd.append('category',cats.join(', '));
+  fd.append('description',desc);fd.append('is_featured',feat);
+  fd.append('has_watermark',hasWM);fd.append('watermark_text',wmText);
+  fd.append('watermark_font',wmFont);fd.append('watermark_pos',wmPos);
+  fd.append('admin_key',key);
+  const pw=document.getElementById('progressWrap'),pb=document.getElementById('progressBar');
+  const btn=document.getElementById('uploadBtn');
+  pw.style.display='block';pb.style.width='10%';btn.disabled=true;
+  showAlert(msgEl,'Uploading...','ok');
+  const xhr=new XMLHttpRequest();
+  xhr.open('POST',API+'?action=upload');
+  xhr.upload.onprogress=e=>{if(e.lengthComputable)pb.style.width=Math.round(e.loaded/e.total*90)+'%';};
+  xhr.onload=()=>{
+    pb.style.width='100%';btn.disabled=false;
+    try{
+      const d=JSON.parse(xhr.responseText);
+      if(d.success){
+        showAlert(msgEl,'✓ Upload ho gayi! ID:'+d.id+(d.watermark_applied?' (Watermark ✓)':''),'ok');
+        document.getElementById('photoFile').value='';
+        document.getElementById('filePreview').style.display='none';
+        document.getElementById('photoTitle').value='';
+        document.getElementById('photoDesc').value='';
+        document.querySelectorAll('#uploadCats input').forEach(c=>c.checked=false);
+        loadPhotos();
+      }else showAlert(msgEl,'✗ '+d.error,'err');
+    }catch{showAlert(msgEl,'✗ Server error: '+xhr.responseText.substring(0,80),'err');}
+    setTimeout(()=>{pw.style.display='none';pb.style.width='0%';},1200);
+  };
+  xhr.send(fd);
+}
+
+// ── FEATURED WORK TAB
+async function loadFeaturedTab(){
+  await loadPhotos();
+  renderFeaturedTab();
+}
+
+function renderFeaturedTab(){
+  const featuredPhotos=allPhotos.filter(p=>p.is_featured==1);
+  const availPhotos=allPhotos.filter(p=>p.is_featured!=1);
+  featuredIds=featuredPhotos.map(p=>p.id);
+  document.getElementById('availCount').textContent=availPhotos.length+' photos';
+  document.getElementById('featCount2').textContent=featuredPhotos.length+' selected';
+  renderAvailList(availPhotos);
+  renderFeatList(featuredPhotos);
+}
+
+function filterAvail(){
+  const q=document.getElementById('featSearch').value.toLowerCase();
+  const avail=allPhotos.filter(p=>p.is_featured!=1&&(!q||p.title.toLowerCase().includes(q)||p.category.toLowerCase().includes(q)));
+  renderAvailList(avail);
+}
+
+function renderAvailList(photos){
+  const el=document.getElementById('availList');
+  if(!photos.length){el.innerHTML='<p style="color:#333;font-size:.75rem;padding:1rem">Koi available photo nahi.</p>';return;}
+  el.innerHTML=photos.map(p=>`
+    <div class="feat-item">
+      <img src="${API}?action=get_image&id=${p.id}" alt="${p.title}" onerror="this.style.display='none'">
+      <div class="feat-item-info">
+        <div class="feat-item-title">${p.title}</div>
+        <div class="feat-item-cat">${p.category}</div>
+      </div>
+      <div class="feat-item-btn">
+        <button class="btn-success btn-sm" onclick="addToFeatured(${p.id})">+ Add</button>
+      </div>
+    </div>`).join('');
+}
+
+function renderFeatList(photos){
+  const el=document.getElementById('featList');
+  if(!photos.length){el.innerHTML='<p style="color:#333;font-size:.75rem;padding:1rem">Koi photo featured nahi. Left se add karo.</p>';return;}
+  el.innerHTML=photos.map((p,i)=>`
+    <div class="feat-item" id="fitem-${p.id}">
+      <div class="feat-order">${i+1}</div>
+      <img src="${API}?action=get_image&id=${p.id}" alt="${p.title}" onerror="this.style.display='none'">
+      <div class="feat-item-info">
+        <div class="feat-item-title">${p.title}</div>
+        <div class="feat-item-cat">${p.category}</div>
+      </div>
+      <div class="feat-item-btn">
+        <button class="btn-danger btn-sm" onclick="removeFromFeatured(${p.id})">✕ Remove</button>
+      </div>
+    </div>`).join('');
+}
+
+async function addToFeatured(id){
+  const key=document.getElementById('adminKey').value;
+  const fd=new FormData();fd.append('id',id);fd.append('admin_key',key);
+  const d=await(await fetch(API+'?action=set_hero',{method:'POST',body:fd})).json();
+  if(d.success){await loadPhotos();renderFeaturedTab();}
+  else alert('Error: '+d.error);
+}
+
+async function removeFromFeatured(id){
+  const key=document.getElementById('adminKey').value;
+  const fd=new FormData();
+  fd.append('id',id);fd.append('title','');fd.append('category','General');
+  fd.append('description','');fd.append('is_featured','0');fd.append('admin_key',key);
+  const d=await(await fetch(API+'?action=update',{method:'POST',body:fd})).json();
+  if(d.success){await loadPhotos();renderFeaturedTab();}
+}
+
+async function saveFeatured(){
+  const msgEl=document.getElementById('featMsg');
+  const key=document.getElementById('adminKey').value;
+  const ids=featuredIds;
+  const fd=new FormData();fd.append('ids',JSON.stringify(ids));fd.append('admin_key',key);
+  try{
+    const d=await(await fetch(API+'?action=set_featured_batch',{method:'POST',body:fd})).json();
+    if(d.success){showAlert(msgEl,'✓ Featured photos save ho gayi! ('+d.count+' photos)','ok');await loadPhotos();renderFeaturedTab();}
+    else showAlert(msgEl,'✗ '+(d.error||'Error'),'err');
+  }catch(e){showAlert(msgEl,'✗ '+e.message,'err');}
+}
+
+// ── MESSAGES
+async function loadMessages(){
+  try{
+    const data=await(await fetch(API+'?action=get_messages')).json();
+    allMsgs=data.messages||[];
+    const unread=allMsgs.filter(m=>m.is_read==0).length;
+    document.getElementById('sMsgs').textContent=allMsgs.length;
+    document.getElementById('sUnread').textContent=unread;
+    const badge=document.getElementById('unreadBadge');
+    badge.textContent=unread;badge.classList.toggle('show',unread>0);
+    renderMsgs(allMsgs);
+  }catch(e){}
+}
+
+function filterMsgs(f,btn){
+  msgFilter=f;
+  document.querySelectorAll('.ftm').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+  let filtered=allMsgs;
+  if(f==='unread') filtered=allMsgs.filter(m=>m.is_read==0);
+  if(f==='replied') filtered=allMsgs.filter(m=>m.is_replied==1);
+  renderMsgs(filtered);
+}
+
+function renderMsgs(msgs){
+  const tbody=document.getElementById('msgBody');
+  if(!msgs.length){tbody.innerHTML='<tr><td colspan="6" class="inbox-empty">Koi message nahi.</td></tr>';return;}
+  tbody.innerHTML=msgs.map(m=>`
+    <tr class="${m.is_read==0?'unread':''}" onclick="openMsg(${m.id})">
+      <td><div class="msg-name ${m.is_read==0?'bold':''}">${m.name}</div><div class="msg-email">${m.email}</div></td>
+      <td><span style="font-size:.75rem;color:#777">${m.subject||'(No subject)'}</span></td>
+      <td><div class="msg-preview">${m.message}</div></td>
+      <td><div class="msg-date">${fmtDate(m.created_at)}</div></td>
+      <td>${m.is_replied==1?'<span class="msg-status replied">Replied</span>':m.is_read==1?'<span class="msg-status read">Read</span>':'<span class="msg-status unread">New</span>'}</td>
+      <td onclick="event.stopPropagation()"><button class="btn-danger btn-sm" onclick="delMsg(${m.id})">🗑</button></td>
+    </tr>`).join('');
+}
+
+function openMsg(id){
+  const m=allMsgs.find(x=>x.id==id);if(!m)return;
+  document.getElementById('mdId').value=m.id;
+  document.getElementById('mdEmailH').value=m.email;
+  document.getElementById('mdName').textContent=m.name;
+  document.getElementById('mdEmail').textContent=m.email;
+  document.getElementById('mdSubject').textContent=m.subject||'(No subject)';
+  document.getElementById('mdMsg').textContent=m.message;
+  document.getElementById('replyText').value='';
+  document.getElementById('msgModalAlert').innerHTML='';
+  const pw=document.getElementById('prevReplyWrap');
+  if(m.reply){pw.style.display='block';document.getElementById('prevReply').textContent=m.reply;}
+  else pw.style.display='none';
+  document.getElementById('msgModal').classList.add('open');
+  if(m.is_read==0) markRead(id);
+}
+function closeMsgModal(){document.getElementById('msgModal').classList.remove('open');}
+
+async function markRead(id){
+  const fd=new FormData();fd.append('id',id);fd.append('admin_key',document.getElementById('adminKey').value);
+  await fetch(API+'?action=mark_read',{method:'POST',body:fd});
+  const m=allMsgs.find(x=>x.id==id);if(m)m.is_read=1;loadMessages();
+}
+
+async function sendReply(){
+  const id=document.getElementById('mdId').value;
+  const reply=document.getElementById('replyText').value.trim();
+  const email=document.getElementById('mdEmailH').value;
+  const key=document.getElementById('adminKey').value;
+  const msgEl=document.getElementById('msgModalAlert');
+  if(!reply){showAlert(msgEl,'Reply likhein!','err');return;}
+  const fd=new FormData();fd.append('id',id);fd.append('reply',reply);fd.append('email',email);fd.append('admin_key',key);
+  const d=await(await fetch(API+'?action=reply_message',{method:'POST',body:fd})).json();
+  if(d.success){
+    showAlert(msgEl,'✓ Reply bhej diya!','ok');
+    const m=allMsgs.find(x=>x.id==id);if(m){m.is_replied=1;m.reply=reply;}
+    document.getElementById('prevReplyWrap').style.display='block';
+    document.getElementById('prevReply').textContent=reply;
+    loadMessages();
+  }else showAlert(msgEl,'✗ '+(d.error||'Error'),'err');
+}
+
+async function delMsg(id){
+  if(!confirm('Message delete karein?'))return;
+  const key=document.getElementById('adminKey').value;
+  const fd=new FormData();fd.append('id',id);fd.append('admin_key',key);
+  const d=await(await fetch(API+'?action=delete_message',{method:'POST',body:fd})).json();
+  if(d.success){allMsgs=allMsgs.filter(m=>m.id!=id);loadMessages();}
+}
+function deleteMsgModal(){delMsg(document.getElementById('mdId').value).then(closeMsgModal);}
+
+// ── SETTINGS
+async function loadSettings(){
+  try{
+    const data=await(await fetch(API+'?action=get_settings')).json();
+    const s=data.settings||{};
+    currentBg=s.background||'dark-grain';
+    currentChar=s.character_style||'line-art';
+    document.getElementById('charEnabled').value=s.character_enabled||'1';
+    document.getElementById('charStyle').value=currentChar;
+    if(document.getElementById('lensColor')) document.getElementById('lensColor').value=s.lens_color||'dark';
+    if(document.getElementById('lensSpeed')) document.getElementById('lensSpeed').value=s.lens_speed||'normal';
+    if(document.getElementById('lensFlare')) document.getElementById('lensFlare').value=s.lens_flare||'gold';
+    if(document.getElementById('introDuration')) document.getElementById('introDuration').value=s.intro_duration||'3000';
+    setTimeout(drawLensPreview,200);
+    if(document.getElementById('charSize')) document.getElementById('charSize').value=s.character_size||'medium';
+    if(document.getElementById('charSpeed')) document.getElementById('charSpeed').value=s.character_speed||'normal';
+    document.getElementById('siteTitle').value=s.site_title||'PHOTOGRAPHY-LIFE4ME';
+    // Set active bg swatch
+    document.querySelectorAll('.bg-swatch').forEach(sw=>{
+      sw.classList.toggle('active',sw.dataset.bg===currentBg);
+    });
+    // Set active char card
+    document.querySelectorAll('.char-card').forEach(cc=>{
+      cc.classList.toggle('active',cc.dataset.style===currentChar);
+    });
+  }catch(e){}
+}
+
+function selectBg(el){
+  document.querySelectorAll('.bg-swatch').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  currentBg=el.dataset.bg;
+}
+function selectChar(el){
+  document.querySelectorAll('.char-card').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  currentChar=el.dataset.style;
+  document.getElementById('charStyle').value=currentChar;
+}
+
+async function saveSetting(type){
+  const key=document.getElementById('adminKey').value;
+  const msgEl=document.getElementById(type==='background'?'bgMsg':'charMsg');
+  const fd=new FormData();
+  fd.append('key','background');fd.append('value',currentBg);fd.append('admin_key',key);
+  const d=await(await fetch(API+'?action=save_setting',{method:'POST',body:fd})).json();
+  if(d.success) showAlert(msgEl,'✓ Background save! Website refresh karein.','ok');
+  else showAlert(msgEl,'✗ '+(d.error||'Error'),'err');
+}
+
+function updateLoadingPreview(){
+  const val=document.getElementById('loadingStyle')?.value||'lens';
+  const lensDiv=document.getElementById('lensOptions');
+  const charDiv=document.getElementById('charPositionDiv');
+  const charEnabled=document.getElementById('charEnabled');
+  if(val==='lens'){
+    if(lensDiv)lensDiv.style.display='block';
+    if(charDiv)charDiv.style.display='none';
+    if(charEnabled)charEnabled.value='0';
+  } else {
+    if(lensDiv)lensDiv.style.display='none';
+    if(charDiv)charDiv.style.display='block';
+    if(charEnabled)charEnabled.value='1';
+  }
+}
+
+// ── LENS PREVIEW
+function drawLensPreview(){
+  const cv=document.getElementById('lensPreviewCanvas');
+  if(!cv)return;
+  const ctx=cv.getContext('2d');
+  const color=document.getElementById('lensColor')?.value||'dark';
+  const flare=document.getElementById('lensFlare')?.value||'gold';
+  const colorMap={
+    dark:'radial-gradient',
+    gold:'#3a2000',blue:'#00102a',red:'#1a0000',green:'#001a00'
+  };
+  const bgColors={dark:'#2a2a3a',gold:'#3a2a0a',blue:'#0a1a3a',red:'#3a0a0a',green:'#0a2a0a'};
+  const bg=bgColors[color]||bgColors.dark;
+  ctx.clearRect(0,0,120,120);
+  // Outer ring
+  const grad=ctx.createRadialGradient(42,42,5,60,60,58);
+  grad.addColorStop(0,bg);
+  grad.addColorStop(1,'#050508');
+  ctx.fillStyle=grad;
+  ctx.beginPath();ctx.arc(60,60,55,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#222';ctx.lineWidth=3;
+  ctx.beginPath();ctx.arc(60,60,55,0,Math.PI*2);ctx.stroke();
+  // Inner circle
+  ctx.strokeStyle='#1a1a2a';ctx.lineWidth=1;
+  ctx.beginPath();ctx.arc(60,60,35,0,Math.PI*2);ctx.stroke();
+  // Shine
+  ctx.fillStyle='rgba(255,255,255,.06)';
+  ctx.beginPath();ctx.ellipse(45,42,18,12,-0.5,0,Math.PI*2);ctx.fill();
+  // Flare
+  if(flare!=='none'){
+    const flareColors={gold:'rgba(212,168,83,.7)',white:'rgba(255,255,255,.7)',blue:'rgba(100,160,255,.7)'};
+    const fc=flareColors[flare]||flareColors.gold;
+    const fg=ctx.createRadialGradient(48,40,0,48,40,18);
+    fg.addColorStop(0,fc);fg.addColorStop(1,'transparent');
+    ctx.fillStyle=fg;
+    ctx.beginPath();ctx.arc(48,40,18,0,Math.PI*2);ctx.fill();
+  }
+}
+
+['lensColor','lensSpeed','lensFlare'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el)el.addEventListener('change',drawLensPreview);
+});
+setTimeout(drawLensPreview,100);
+
+async function saveLensSettings(){
+  const key=document.getElementById('adminKey').value;
+  const msgEl=document.getElementById('lensMsg');
+  const lensColor=document.getElementById('lensColor')?.value||'dark';
+  const lensSpeed=document.getElementById('lensSpeed')?.value||'normal';
+  const lensFlare=document.getElementById('lensFlare')?.value||'gold';
+  const introDur=document.getElementById('introDuration')?.value||'3000';
+  const settings=[
+    ['lens_color',lensColor],['lens_speed',lensSpeed],
+    ['lens_flare',lensFlare],['intro_duration',introDur],
+    ['character_enabled','0'],['loading_style','lens'],
+  ];
+  for(const [k,v] of settings){
+    const fd=new FormData();fd.append('key',k);fd.append('value',v);fd.append('admin_key',key);
+    await fetch(API+'?action=save_setting',{method:'POST',body:fd});
+  }
+  showAlert(msgEl,'✓ Lens settings save! Website refresh karein.','ok');
+}
+
+async function saveCharSettings(){
+  const key=document.getElementById('adminKey').value;
+  const msgEl=document.getElementById('charMsg');
+  const loadStyle=document.getElementById('loadingStyle')?.value||'lens';
+  const enabled=loadStyle==='character'?'1':'0';
+  const style=currentChar;
+  const position=document.getElementById('charPosition')?.value||'loading';
+  const size=document.getElementById('charSize')?.value||'medium';
+  const speed=document.getElementById('charSpeed')?.value||'normal';
+  const lensColor=document.getElementById('lensColor')?.value||'dark';
+  const lensSpeed=document.getElementById('lensSpeed')?.value||'normal';
+  const settings=[
+    ['character_enabled',enabled],
+    ['character_style',style],
+    ['character_position',position],
+    ['character_size',size],
+    ['character_speed',speed],
+    ['loading_style',loadStyle],
+    ['lens_color',lensColor],
+    ['lens_speed',lensSpeed],
+  ];
+  for(const [k,v] of settings){
+    const fd=new FormData();fd.append('key',k);fd.append('value',v);fd.append('admin_key',key);
+    await fetch(API+'?action=save_setting',{method:'POST',body:fd});
+  }
+  showAlert(msgEl,'✓ Settings save! Website refresh karein.','ok');
+}
+
+async function saveSiteTitleSetting(){
+  const key=document.getElementById('adminKey').value;
+  const title=document.getElementById('siteTitle').value.trim();
+  const msgEl=document.getElementById('siteMsg');
+  const fd=new FormData();fd.append('key','site_title');fd.append('value',title);fd.append('admin_key',key);
+  const d=await(await fetch(API+'?action=save_setting',{method:'POST',body:fd})).json();
+  if(d.success) showAlert(msgEl,'✓ Title save! Website refresh karein.','ok');
+  else showAlert(msgEl,'✗ '+(d.error||'Error'),'err');
+}
+
+// ── CHAR PREVIEWS (mini)
+function drawCharPreviews(){
+  drawLineArt(document.getElementById('charPrev1').getContext('2d'),80,90);
+  drawCartoon(document.getElementById('charPrev2').getContext('2d'),80,90);
+  drawPixel(document.getElementById('charPrev3').getContext('2d'),80,90);
+  drawSilhouette(document.getElementById('charPrev4').getContext('2d'),80,90);
+}
+
+function drawLineArt(ctx,w,h){
+  ctx.clearRect(0,0,w,h);
+  ctx.strokeStyle='#f0ece6';ctx.lineWidth=1.2;ctx.lineCap='round';
+  ctx.beginPath();ctx.arc(40,28,14,0,Math.PI*2);ctx.stroke();
+  ctx.fillStyle='#f0ece6';
+  ctx.beginPath();ctx.arc(36,26,1.5,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(44,26,1.5,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(40,31,5,0.3,Math.PI-.3);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(34,42);ctx.lineTo(28,55);ctx.lineTo(52,55);ctx.lineTo(46,42);ctx.closePath();ctx.stroke();
+  ctx.beginPath();ctx.moveTo(28,46);ctx.quadraticCurveTo(16,47,12,53);ctx.stroke();
+  ctx.strokeRect(5,48,14,9);ctx.beginPath();ctx.arc(12,53,3,0,Math.PI*2);ctx.stroke();
+  ctx.strokeStyle='#d4a853';ctx.beginPath();ctx.arc(12,53,1.5,0,Math.PI*2);ctx.stroke();
+  ctx.strokeStyle='#f0ece6';
+  ctx.beginPath();ctx.moveTo(52,46);ctx.quadraticCurveTo(62,47,65,53);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(34,55);ctx.lineTo(32,72);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(46,55);ctx.lineTo(48,72);ctx.stroke();
+}
+
+function drawCartoon(ctx,w,h){
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle='#f5c842';
+  ctx.beginPath();ctx.arc(40,28,16,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#1a1a1a';
+  ctx.beginPath();ctx.arc(34,25,3,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(46,25,3,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#fff';
+  ctx.beginPath();ctx.arc(35,24,1.2,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(47,24,1.2,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#1a1a1a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(40,30,5,0.3,Math.PI-.3);ctx.stroke();
+  ctx.fillStyle='#e8b84b';
+  ctx.beginPath();ctx.ellipse(40,54,14,16,0,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.moveTo(26,48);ctx.quadraticCurveTo(14,48,10,56);ctx.stroke();
+  ctx.fillStyle='#2a2a2a';ctx.fillRect(4,52,14,9);
+  ctx.fillStyle='rgba(100,180,255,.7)';ctx.beginPath();ctx.arc(11,57,3,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#d4962a';
+  ctx.beginPath();ctx.ellipse(35,70,4,8,-.1,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.ellipse(45,70,4,8,.1,0,Math.PI*2);ctx.fill();
+}
+
+function drawPixel(ctx,w,h){
+  ctx.clearRect(0,0,w,h);
+  const S=4;
+  const p=(x,y,c)=>{ctx.fillStyle=c;ctx.fillRect(x*S,y*S,S,S);};
+  [[4,2],[5,2],[6,2],[7,2],[3,3],[8,3],[3,4],[4,4],[5,4],[6,4],[7,4],[8,4],[3,5],[8,5],[3,6],[4,6],[5,6],[6,6],[7,6],[8,6],[4,7],[5,7],[6,7],[7,7]].forEach(([x,y])=>p(x,y,'#f5c842'));
+  [[5,4],[7,4]].forEach(([x,y])=>p(x,y,'#1a1a1a'));
+  [[4,8],[5,8],[6,8],[7,8],[8,8],[4,9],[5,9],[6,9],[7,9],[8,9],[5,10],[6,10],[7,10]].forEach(([x,y])=>p(x,y,'#e8b84b'));
+  [[3,9],[2,9],[1,9]].forEach(([x,y])=>p(x,y,'#e8b84b'));
+  [[0,9],[0,10],[0,11],[1,10],[1,11],[2,10],[2,11]].forEach(([x,y])=>p(x,y,'#2a2a2a'));
+  p(1,10,'rgba(100,160,255,.8)');
+  [[5,11],[5,12],[5,13]].forEach(([x,y])=>p(x,y,'#d4962a'));
+  [[7,11],[7,12],[7,13]].forEach(([x,y])=>p(x,y,'#d4962a'));
+}
+
+function drawSilhouette(ctx,w,h){
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle='#1e1e1e';
+  ctx.beginPath();ctx.arc(40,26,16,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(28,40);ctx.bezierCurveTo(24,50,23,62,26,72);ctx.lineTo(54,72);ctx.bezierCurveTo(57,62,56,50,52,40);ctx.closePath();ctx.fill();
+  ctx.beginPath();ctx.moveTo(28,46);ctx.quadraticCurveTo(16,49,10,58);ctx.quadraticCurveTo(8,62,12,64);ctx.quadraticCurveTo(18,58,24,50);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#111';ctx.beginPath();ctx.roundRect(3,54,14,9,2);ctx.fill();
+  ctx.fillStyle='#d4a853';ctx.beginPath();ctx.arc(10,58,3,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='rgba(212,168,83,.25)';ctx.beginPath();ctx.arc(10,58,6,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#1e1e1e';
+  ctx.beginPath();ctx.moveTo(52,46);ctx.quadraticCurveTo(62,49,66,56);ctx.quadraticCurveTo(68,60,64,62);ctx.quadraticCurveTo(58,58,50,50);ctx.closePath();ctx.fill();
+  ctx.beginPath();ctx.ellipse(34,80,5,9,-.1,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.ellipse(46,80,5,9,.1,0,Math.PI*2);ctx.fill();
+}
+
+// ── HELPERS
+function addCat(cid,iid){
+  const v=document.getElementById(iid).value.trim();if(!v)return;
+  addCatToContainer(cid,v);document.getElementById(iid).value='';
+}
+function addCatToContainer(cid,val){
+  const c=document.getElementById(cid);
+  if([...c.querySelectorAll('input')].find(i=>i.value===val)){[...c.querySelectorAll('input')].find(i=>i.value===val).checked=true;return;}
+  const lbl=document.createElement('label');lbl.className='cat-option';
+  lbl.innerHTML=`<input type="checkbox" value="${val}" checked> ${val}`;
+  c.appendChild(lbl);
+}
+function fmtDate(dt){return new Date(dt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});}
+function showAlert(el,msg,type){el.innerHTML=`<div class="msg-alert ${type}">${msg}</div>`;}
+
+['photoModal','msgModal'].forEach(id=>{
+  document.getElementById(id).addEventListener('click',e=>{
+    if(e.target===document.getElementById(id)) document.getElementById(id).classList.remove('open');
+  });
+});
+</script>
+</body>
+</html>

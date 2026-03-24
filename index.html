@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Photography-life4me | Shubham Sagar</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--black:#080808;--deep:#0f0f0f;--surface:#161616;--border:#2a2a2a;--muted:#999;--text:#d0c8bc;--accent:#d4a853;--white:#f0ece6}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--text);font-family:'Cormorant Garamond',serif;overflow-x:hidden}
+
+/* PAGE TRANSITION */
+.page-transition{position:fixed;inset:0;background:var(--black);z-index:9998;transform-origin:top;animation:pageReveal .8s .1s cubic-bezier(.77,0,.18,1) forwards}
+@keyframes pageReveal{0%{transform:scaleY(1)}100%{transform:scaleY(0)}}
+
+/* INTRO */
+#intro{position:fixed;inset:0;z-index:9999;background:#000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1.5rem}
+#intro.hide{animation:introOut .8s .1s forwards;pointer-events:none}
+@keyframes introOut{to{opacity:0;visibility:hidden}}
+#intro{flex-direction:column;gap:1.5rem}
+.lens{width:180px;height:180px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#2a2a3a,#050508 60%);border:3px solid #222;box-shadow:0 0 0 8px #111,0 0 0 14px #1a1a1a,0 0 0 20px #111,0 0 60px rgba(0,0,0,.9);position:relative;overflow:hidden;animation:lensIn .6s ease-out forwards}
+@keyframes lensIn{from{transform:scale(.2);opacity:0}to{transform:scale(1);opacity:1}}
+.lens-shine{position:absolute;top:15%;left:20%;width:30%;height:20%;background:rgba(255,255,255,.07);border-radius:50%;transform:rotate(-30deg)}
+.lens svg{position:absolute;inset:0;width:100%;height:100%}
+.iris-mask{animation:irisOpen 1.5s .7s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes irisOpen{from{r:50}to{r:2}}
+.lens-flare{position:absolute;top:22%;left:28%;width:10px;height:10px;background:rgba(212,168,83,.7);border-radius:50%;box-shadow:0 0 25px 10px rgba(212,168,83,.25);opacity:0;animation:flareIn .5s 2s forwards}
+@keyframes flareIn{to{opacity:1}}
+@keyframes flareIn{to{opacity:1}}
+.intro-sub{font-family:'Space Mono',monospace;font-size:.68rem;letter-spacing:.4em;color:rgba(212,168,83,.85);text-transform:uppercase;opacity:0;animation:fadeUp .7s 1s forwards}
+.intro-name{font-family:'Bebas Neue',sans-serif;font-size:2.4rem;letter-spacing:.3em;color:var(--white);opacity:0;animation:fadeUp .7s 1.3s forwards}
+.intro-name span{color:var(--accent)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* MAIN */
+#main{opacity:0;transition:opacity .9s}
+#main.show{opacity:1}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:1.4rem 4rem;background:rgba(8,8,8,.96);border-bottom:1px solid var(--border);transform:translateY(-100%);transition:transform .6s .2s}
+nav.show{transform:translateY(0)}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:1.7rem;letter-spacing:.15em;color:var(--white);text-decoration:none}
+.nav-logo span{color:var(--accent)}
+.nav-links{display:flex;gap:2.5rem;list-style:none}
+.nav-links a{font-family:'Space Mono',monospace;font-size:.82rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--white);text-decoration:none;transition:color .3s;position:relative}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1.5px;background:var(--accent);transition:width .3s}
+.nav-links a:hover,.nav-links a.active{color:var(--accent)}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%}
+
+/* HERO — SPLIT LAYOUT */
+.hero{height:100vh;display:grid;grid-template-columns:1fr 1fr;position:relative;overflow:visible}
+.hero-left{display:flex;flex-direction:column;justify-content:center;padding:8rem 4rem 4rem;background:var(--black);position:relative;z-index:2}
+.hero-eyebrow{font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.35em;color:var(--accent);text-transform:uppercase;margin-bottom:1.5rem;opacity:0;transform:translateY(20px);transition:all .8s .4s}
+.hero-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.2rem,2vw,1.8rem);color:var(--accent);letter-spacing:.15em;line-height:1;opacity:0;transform:translateY(20px);transition:all .8s .4s;margin-bottom:.4rem}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(5rem,10vw,10rem);line-height:.88;color:var(--white);opacity:0;transform:translateY(30px);transition:all .8s .6s}
+.hero-title em{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;color:var(--accent);font-size:.58em;display:block}
+.hero-sub{margin-top:1.8rem;font-size:1.2rem;font-weight:300;font-style:italic;color:var(--muted);max-width:340px;line-height:1.75;opacity:0;transform:translateY(20px);transition:all .8s .8s}
+.hero-btns{margin-top:2.5rem;display:flex;gap:1.5rem;align-items:center;opacity:0;transform:translateY(20px);transition:all .8s 1s}
+.btn-gold{font-family:'Space Mono',monospace;font-size:.74rem;letter-spacing:.2em;text-transform:uppercase;color:var(--black);background:var(--accent);padding:.95rem 2.5rem;text-decoration:none;display:inline-block;transition:all .3s}
+.btn-gold:hover{background:var(--white);transform:translateY(-2px)}
+.btn-outline{font-family:'Space Mono',monospace;font-size:.74rem;letter-spacing:.2em;text-transform:uppercase;color:var(--white);border:1px solid rgba(255,255,255,.4);padding:.95rem 2.5rem;text-decoration:none;display:inline-block;transition:all .3s}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ANIMATE IN when main shows */
+#main.show .hero-eyebrow,
+#main.show .hero-name,
+#main.show .hero-title,
+#main.show .hero-sub,
+#main.show .hero-btns{opacity:1;transform:translateY(0)}
+
+.hero-right{position:relative;overflow:hidden;z-index:1}
+.hero-img{width:100%;height:100%;object-fit:cover;filter:brightness(.7) contrast(1.1);transform:scale(1.05);transition:transform 1.5s ease}
+#main.show .hero-img{transform:scale(1)}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to right,var(--black) 0%,transparent 35%)}
+.hero-scroll{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.5rem;font-family:'Space Mono',monospace;font-size:.58rem;letter-spacing:.25em;color:rgba(255,255,255,.55);opacity:0;transition:opacity 1s 1.5s;z-index:10;writing-mode:horizontal-tb}
+#main.show .hero-scroll{opacity:1}
+.scroll-line{width:1px;height:55px;background:linear-gradient(to bottom,var(--accent),rgba(212,168,83,0));animation:scrollDrop 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+@keyframes scrollDrop{0%{transform:scaleY(0);transform-origin:top;opacity:1}60%{transform:scaleY(1);transform-origin:top;opacity:1}100%{transform:scaleY(1);transform-origin:top;opacity:0}}
+
+/* FEATURED */
+.feat-section{padding:5rem 4rem}
+.feat-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:3rem;opacity:0;transform:translateY(25px);transition:all .8s ease}
+.feat-header.vis{opacity:1;transform:translateY(0)}
+.feat-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.2rem,4vw,3.5rem);color:var(--white);letter-spacing:.05em}
+.feat-link{font-family:'Space Mono',monospace;font-size:.74rem;letter-spacing:.2em;color:var(--accent);text-decoration:none;text-transform:uppercase;display:flex;align-items:center;gap:.5rem;transition:gap .3s}
+.feat-link:hover{gap:1rem}
+
+.feat-grid{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:300px 300px;gap:1rem;opacity:0;transform:translateY(25px);transition:all .8s .15s ease}
+.feat-grid.vis{opacity:1;transform:translateY(0)}
+.feat-item{position:relative;overflow:hidden;cursor:pointer}
+.feat-item:first-child{grid-row:span 2}
+.feat-item img{width:100%;height:100%;object-fit:cover;filter:brightness(.82);transition:transform .7s,filter .5s}
+.feat-item:hover img{transform:scale(1.06);filter:brightness(1)}
+.feat-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(8,8,8,.88),transparent 50%);opacity:0;transition:opacity .4s}
+.feat-item:hover .feat-overlay{opacity:1}
+.feat-caption{position:absolute;bottom:0;left:0;right:0;padding:1.5rem;transform:translateY(8px);opacity:0;transition:all .4s}
+.feat-item:hover .feat-caption{opacity:1;transform:translateY(0)}
+.feat-caption-title{font-size:1.15rem;font-style:italic;color:var(--white)}
+.feat-caption-cat{font-family:'Space Mono',monospace;font-size:.62rem;letter-spacing:.15em;color:var(--accent);text-transform:uppercase;margin-top:.25rem}
+.feat-loading{grid-column:span 3;text-align:center;padding:3rem;font-family:'Space Mono',monospace;font-size:.75rem;color:var(--muted)}
+
+/* CATEGORIES */
+.cat-section{padding:3rem 4rem 5rem;background:var(--deep)}
+.cat-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,4vw,3rem);color:var(--white);margin-bottom:2.5rem;letter-spacing:.05em;opacity:0;transform:translateY(20px);transition:all .8s}
+.cat-title.vis{opacity:1;transform:translateY(0)}
+.cat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;opacity:0;transform:translateY(20px);transition:all .8s .15s}
+.cat-grid.vis{opacity:1;transform:translateY(0)}
+.cat-card{position:relative;overflow:hidden;cursor:pointer;text-decoration:none;display:block}
+.cat-card img{width:100%;height:180px;object-fit:cover;filter:brightness(.45);transition:filter .5s,transform .5s}
+.cat-card:hover img{filter:brightness(.75);transform:scale(1.05)}
+.cat-card-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem}
+.cat-card-name{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.15em;color:var(--white)}
+.cat-card-count{font-family:'Space Mono',monospace;font-size:.62rem;letter-spacing:.2em;color:var(--accent);text-transform:uppercase}
+
+/* LIGHTBOX */
+.lightbox{position:fixed;inset:0;background:rgba(8,8,8,.97);z-index:300;display:none;align-items:center;justify-content:center}
+.lightbox.open{display:flex}
+.lightbox img{max-width:88vw;max-height:88vh;object-fit:contain;animation:lbIn .3s ease}
+@keyframes lbIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.lb-close{position:absolute;top:2rem;right:3rem;font-family:'Space Mono',monospace;font-size:.74rem;letter-spacing:.2em;color:var(--muted);cursor:pointer;transition:color .3s;background:none;border:none}
+.lb-close:hover{color:var(--accent)}
+.lb-caption{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-style:italic;color:var(--text);white-space:nowrap}
+
+/* FOOTER */
+footer{background:var(--deep);border-top:1px solid var(--border);padding:1.5rem 4rem;display:flex;align-items:center;justify-content:space-between}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.15em;color:var(--white);opacity:.5}
+.footer-logo span{color:var(--accent);opacity:1}
+.footer-copy{font-family:'Space Mono',monospace;font-size:.68rem;color:var(--white);opacity:.55;letter-spacing:.05em}
+.footer-links{display:flex;gap:2rem}
+.footer-links a{font-family:'Space Mono',monospace;font-size:.68rem;letter-spacing:.15em;color:var(--white);opacity:.6;text-decoration:none;text-transform:uppercase;transition:all .3s}
+.footer-links a:hover{color:var(--accent);opacity:1}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE — MOBILE & TABLET
+═══════════════════════════════════════ */
+@media (max-width:768px){
+  /* NAV */
+  nav{padding:1rem 1.2rem}
+  .nav-logo{font-size:1.2rem}
+  .nav-links{gap:1.2rem}
+  .nav-links a{font-size:.65rem;letter-spacing:.1em}
+
+  /* HERO */
+  .hero{grid-template-columns:1fr;height:auto;min-height:100vh}
+  .hero-left{padding:6rem 1.5rem 2rem;order:2}
+  .hero-right{height:55vw;min-height:250px;order:1}
+  .hero-title{font-size:clamp(3.5rem,15vw,6rem)}
+  .hero-name{font-size:clamp(.9rem,3vw,1.2rem)}
+  .hero-sub{font-size:1rem;max-width:100%}
+  .hero-btns{flex-direction:column;gap:.8rem}
+  .btn-gold,.btn-outline{text-align:center;width:100%;max-width:280px}
+
+  /* FEATURED GRID */
+  .feat-grid{grid-template-columns:1fr 1fr!important}
+  .feat-item:first-child{grid-column:span 2}
+
+  /* CATEGORY GRID */
+  .cat-grid{grid-template-columns:1fr 1fr!important}
+
+  /* PAGE HEADER */
+  .page-header{padding:7rem 1.5rem 2.5rem}
+  .page-header-title{font-size:clamp(2.5rem,12vw,5rem)}
+
+  /* PORTFOLIO MASONRY */
+  .masonry-container{column-count:2!important;padding:1.5rem}
+
+  /* ABOUT */
+  .about-split{flex-direction:column!important;gap:2rem}
+  .about-img-wrap{width:100%!important;height:280px}
+  .about-text{padding:0!important}
+  .about-stats{grid-template-columns:1fr 1fr!important}
+  .about-gear-grid{grid-template-columns:1fr 1fr!important}
+  .timeline{padding-left:1.5rem!important}
+
+  /* CONTACT */
+  .contact-body{grid-template-columns:1fr!important;padding:2rem 1.5rem;gap:2.5rem}
+  .contact-hero{padding:7rem 1.5rem 3rem}
+
+  /* FOOTER */
+  footer{flex-direction:column;gap:.8rem;text-align:center;padding:1.5rem}
+  .footer-links{justify-content:center}
+
+  /* FILTER BAR */
+  .filter-bar{padding:1rem 1.2rem;gap:.5rem;top:56px}
+  .filter-tab{padding:.4rem .8rem;font-size:.55rem}
+}
+
+@media (max-width:480px){
+  nav{padding:.9rem 1rem}
+  .nav-links{gap:.8rem}
+  .nav-links a{font-size:.6rem}
+  .hero-title{font-size:clamp(3rem,18vw,5rem)}
+  .feat-grid{grid-template-columns:1fr!important}
+  .feat-item:first-child{grid-column:span 1}
+  .cat-grid{grid-template-columns:1fr!important}
+  .masonry-container{column-count:1!important;padding:1rem}
+  .about-stats{grid-template-columns:1fr 1fr!important}
+  .about-gear-grid{grid-template-columns:1fr!important}
+  .contact-body{padding:1.5rem 1rem}
+  .contact-hero{padding:6rem 1rem 2.5rem}
+  .page-header{padding:6rem 1rem 2rem}
+  .page-header-title{font-size:clamp(2rem,14vw,4rem)}
+  .filter-tab{padding:.35rem .6rem;font-size:.52rem}
+}
+
+@media (min-width:769px) and (max-width:1024px){
+  .hero{grid-template-columns:1fr 1fr}
+  .hero-left{padding:6rem 2.5rem 3rem}
+  .hero-title{font-size:clamp(4rem,8vw,7rem)}
+  .feat-grid{grid-template-columns:repeat(3,1fr)!important}
+  .masonry-container{column-count:2!important;padding:2rem}
+  .contact-body{grid-template-columns:1fr 1fr!important;padding:3rem 2rem;gap:3rem}
+  .about-gear-grid{grid-template-columns:repeat(2,1fr)!important}
+}
+
+/* HAMBURGER MENU */
+.hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:.3rem;z-index:201}
+.hamburger span{width:22px;height:2px;background:var(--white);transition:all .3s;display:block}
+.hamburger.open span:nth-child(1){transform:rotate(45deg) translate(4px,4px)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(4px,-4px)}
+@media(max-width:768px){
+  .hamburger{display:flex}
+  .nav-links{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(8,8,8,.97);flex-direction:column;align-items:center;justify-content:center;gap:2.5rem;z-index:200}
+  .nav-links.open{display:flex}
+  .nav-links a{font-size:1.1rem;letter-spacing:.2em}
+}
+
+</style>
+</head>
+<body>
+
+<div class="page-transition"></div>
+
+<!-- INTRO -->
+<div id="intro">
+  <!-- Lens (default) OR Character canvas (set from admin) -->
+  <div id="lensWrap">
+    <div class="lens">
+      <div class="lens-shine"></div>
+      <svg viewBox="0 0 100 100">
+        <defs><mask id="m"><rect width="100" height="100" fill="white"/><circle class="iris-mask" cx="50" cy="50" r="50" fill="black"/></mask></defs>
+        <rect width="100" height="100" fill="#030305" mask="url(#m)"/>
+        <circle cx="50" cy="50" r="48" fill="none" stroke="#1a1a2a" stroke-width="1.5"/>
+      </svg>
+      <div class="lens-flare"></div>
+    </div>
+  </div>
+  <canvas id="charCanvas" width="320" height="260" style="display:none"></canvas>
+  <div class="intro-sub" id="introSub" style="opacity:0">Visual Storytelling</div>
+  <div class="intro-name" id="introName" style="opacity:0">PHOTOGRAPHY<span style="color:#d4a853">-</span>LIFE4ME</div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" onclick="closeLightbox()">[ CLOSE × ]</button>
+  <img id="lbImg" src="" alt="">
+  <div class="lb-caption" id="lbCaption"></div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+  <nav id="navbar">
+    <a href="index.html" class="nav-logo">PHOTOGRAPHY-LIFE4ME</a>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="portfolio.html">Portfolio</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="contact_page.html">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO — SPLIT -->
+  <section class="hero">
+    <div class="hero-left">
+      <div class="hero-name">SHUBHAM SAGAR</div>
+      <h1 class="hero-title">Through<br><em>the dark</em>Light</h1>
+      <p class="hero-sub">Photography that lives in the space between shadow and revelation.</p>
+      <div class="hero-btns">
+        <a href="portfolio.html" class="btn-gold">View Portfolio</a>
+        <a href="about.html" class="btn-outline">About Me</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <img class="hero-img" id="heroImg" src="" alt="Hero">
+      <div class="hero-overlay"></div>
+    </div>
+    <div class="hero-scroll"><div class="scroll-line"></div><span>SCROLL</span></div>
+  </section>
+
+  <!-- FEATURED -->
+  <section class="feat-section">
+    <div class="feat-header" id="featHeader">
+      <h2 class="feat-title">Featured Work</h2>
+      <a href="portfolio.html" class="feat-link">View All →</a>
+    </div>
+    <div class="feat-grid" id="featGrid">
+      <div class="feat-loading">Loading featured photos...</div>
+    </div>
+  </section>
+
+  <!-- CATEGORIES -->
+  <section class="cat-section">
+    <h2 class="cat-title" id="catTitle">Browse by Category</h2>
+    <div class="cat-grid" id="catGrid"></div>
+  </section>
+
+  <footer>
+    <div class="footer-logo">PHOTOGRAPHY-LIFE4ME</div>
+    <div class="footer-copy">© 2026 Shubham Sagar — All rights reserved</div>
+    <div class="footer-links">
+      <a href="portfolio.html">Portfolio</a>
+      <a href="about.html">About</a>
+      <a href="contact_page.html">Contact</a>
+    </div>
+  </footer>
+</div>
+
+<script>
+const API='api.php';
+let allPhotos=[];
+
+// Intro + page reveal
+window.addEventListener('load',()=>{
+  // Load settings first, then decide lens vs character
+  loadSettings().then(s=>{
+    startCharAnimation(s||{});
+  }).catch(()=>{
+    startCharAnimation({});
+  });
+  loadPhotos();
+});
+
+// ── CHARACTER ANIMATION ─────────────────────
+function startCharAnimation(settings={}){
+  const pos=settings.character_position||'loading';
+  const size=settings.character_size||'medium';
+  const speed=settings.character_speed||'normal';
+  const sizeMap={small:.7,medium:1,large:1.4};
+  const speedMap={slow:.6,normal:1,fast:1.8};
+  const sizeScale=sizeMap[size]||1;
+  const speedScale=speedMap[speed]||1;
+  const charEnabled=(settings.character_enabled||'0')==='1';
+
+  // If character disabled or not loading position - use lens (default)
+  if(!charEnabled || pos!=='loading'){
+    // Lens animation runs via CSS, just set timer to show website
+    if(pos==='corner'&&charEnabled){setupCornerChar(settings);}
+    if(pos==='hero'&&charEnabled){setupHeroChar(settings);}
+    const dur=window._introDuration||3200;
+    setTimeout(()=>{
+      document.getElementById('intro').classList.add('hide');
+      setTimeout(()=>{
+        document.getElementById('main').classList.add('show');
+        document.getElementById('navbar').classList.add('show');
+      },400);
+    },dur);
+    return;
+  }
+
+  // Character loading screen - hide lens, show canvas
+  document.getElementById('lensWrap').style.display='none';
+  const canvas=document.getElementById('charCanvas');
+  canvas.style.display='block';
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const W=320, H=260;
+  let frame=0, charX=W+60, phase='walk-in';
+  let flashAlpha=0, textShown=false;
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+
+    // Ground line
+    ctx.strokeStyle='rgba(212,168,83,.15)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(0,210);ctx.lineTo(W,210);ctx.stroke();
+
+    // Walk phases
+    const walkSpeed=3*speedScale;
+    if(phase==='walk-in'){
+      charX-=walkSpeed;
+      if(charX<=W/2) phase='click';
+    } else if(phase==='click'){
+      // Camera click once at frame 30
+      if(frame===30){
+        flashAlpha=1;
+        textShown=true;
+        setTimeout(()=>{
+          const sub=document.getElementById('introSub');
+          const nm=document.getElementById('introName');
+          if(sub)sub.style.cssText='opacity:1;transition:opacity .8s';
+          if(nm)nm.style.cssText='opacity:1;transition:opacity .8s .3s';
+        },200);
+      }
+      // After 2.5 seconds start walk out
+      if(frame>150) phase='walk-out';
+    } else if(phase==='walk-out'){
+      charX-=4*speedScale;
+      if(charX<-100){
+        // Done — show website
+        document.getElementById('intro').classList.add('hide');
+        setTimeout(()=>{
+          document.getElementById('main').classList.add('show');
+          document.getElementById('navbar').classList.add('show');
+        },400);
+        return; // Stop animation loop
+      }
+    }
+
+    // Flash fade
+    if(flashAlpha>0) flashAlpha=Math.max(0,flashAlpha-.04);
+
+    drawCartoon(ctx, charX, 120, frame, phase, flashAlpha);
+
+    frame++;
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// ── CORNER CHARACTER
+function setupCornerChar(settings){
+  // Remove intro, show site immediately
+  document.getElementById('intro').classList.add('hide');
+  setTimeout(()=>{
+    document.getElementById('main').classList.add('show');
+    document.getElementById('navbar').classList.add('show');
+  },400);
+  // Create fixed corner canvas
+  const wrap=document.createElement('div');
+  wrap.id='cornerChar';
+  wrap.style.cssText='position:fixed;bottom:1rem;right:1rem;z-index:150;pointer-events:none';
+  const cv=document.createElement('canvas');
+  cv.width=120;cv.height=130;
+  wrap.appendChild(cv);
+  document.body.appendChild(wrap);
+  const ctx=cv.getContext('2d');
+  let f=0,flashA=0;
+  function draw(){
+    ctx.clearRect(0,0,120,130);
+    if(f%90===0) flashA=1;
+    if(flashA>0) flashA=Math.max(0,flashA-.04);
+    drawCartoon(ctx,60,40,f,'click',flashA);
+    f++;requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// ── HERO CHARACTER
+function setupHeroChar(settings){
+  document.getElementById('intro').classList.add('hide');
+  setTimeout(()=>{
+    document.getElementById('main').classList.add('show');
+    document.getElementById('navbar').classList.add('show');
+    // Add canvas to hero section
+    setTimeout(()=>{
+      const heroRight=document.querySelector('.hero-right');
+      if(!heroRight)return;
+      const cv=document.createElement('canvas');
+      cv.width=140;cv.height=160;
+      cv.style.cssText='position:absolute;bottom:3rem;left:1rem;z-index:3;opacity:.9;pointer-events:none';
+      heroRight.style.position='relative';
+      heroRight.appendChild(cv);
+      const ctx=cv.getContext('2d');
+      let f=0,flashA=0,hx=200,phase='walk-in';
+      function draw(){
+        ctx.clearRect(0,0,160,180);
+        if(phase==='walk-in'){hx-=2;if(hx<=80)phase='click';}
+        if(phase==='click'&&f%80===0) flashA=1;
+        if(flashA>0) flashA=Math.max(0,flashA-.04);
+        drawCartoon(ctx,hx,60,f,phase,flashA);
+        f++;requestAnimationFrame(draw);
+      }
+      draw();
+    },600);
+  },400);
+}
+
+function drawCartoon(ctx, cx, cy, frame, phase, flashAlpha){
+  const bob = phase==='click' ? Math.sin(frame*.08)*3 : Math.sin(frame*.15)*5;
+  const legSwing = phase==='walk-out'||phase==='walk-in' ? Math.sin(frame*.2)*18 : 0;
+  const armSwing = phase==='click' ? -25 : Math.sin(frame*.2+Math.PI)*15;
+
+  ctx.save();
+
+  // Shadow
+  ctx.fillStyle='rgba(0,0,0,.3)';
+  ctx.beginPath();ctx.ellipse(cx,cy+92,28,6,0,0,Math.PI*2);ctx.fill();
+
+  // Body
+  ctx.fillStyle='#e8b84b';
+  ctx.beginPath();ctx.ellipse(cx,cy+55+bob,22,28,0,0,Math.PI*2);ctx.fill();
+
+  // Shirt detail
+  ctx.fillStyle='rgba(0,0,0,.15)';
+  ctx.beginPath();ctx.ellipse(cx,cy+55+bob,12,15,0,0,Math.PI*2);ctx.fill();
+
+  // Left leg
+  ctx.save();ctx.translate(cx-10,cy+78+bob);ctx.rotate(legSwing*Math.PI/180);
+  ctx.fillStyle='#d4962a';
+  ctx.beginPath();ctx.roundRect(-6,0,12,32,4);ctx.fill();
+  // Shoe
+  ctx.fillStyle='#1a1a1a';
+  ctx.beginPath();ctx.ellipse(2,34,10,5,-.1,0,Math.PI*2);ctx.fill();
+  ctx.restore();
+
+  // Right leg
+  ctx.save();ctx.translate(cx+10,cy+78+bob);ctx.rotate(-legSwing*Math.PI/180);
+  ctx.fillStyle='#d4962a';
+  ctx.beginPath();ctx.roundRect(-6,0,12,32,4);ctx.fill();
+  ctx.fillStyle='#1a1a1a';
+  ctx.beginPath();ctx.ellipse(-2,34,10,5,.1,0,Math.PI*2);ctx.fill();
+  ctx.restore();
+
+  // Left arm (holding camera)
+  ctx.save();ctx.translate(cx-22,cy+42+bob);ctx.rotate((armSwing)*Math.PI/180);
+  ctx.fillStyle='#e8b84b';
+  ctx.beginPath();ctx.roundRect(-6,0,12,30,4);ctx.fill();
+  // Camera at end of arm
+  ctx.fillStyle='#2a2a2a';
+  ctx.beginPath();ctx.roundRect(-12,26,24,16,3);ctx.fill();
+  // Lens
+  ctx.fillStyle='#111';
+  ctx.beginPath();ctx.arc(0,34,5,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='rgba(80,160,255,.7)';
+  ctx.beginPath();ctx.arc(0,34,3,0,Math.PI*2);ctx.fill();
+  // Flash light
+  if(flashAlpha>0){
+    ctx.fillStyle=`rgba(255,255,180,${flashAlpha*.8})`;
+    ctx.beginPath();ctx.arc(0,34,16,0,Math.PI*2);ctx.fill();
+    // Rays
+    ctx.strokeStyle=`rgba(255,255,180,${flashAlpha*.5})`;ctx.lineWidth=2;
+    for(let i=0;i<8;i++){
+      const a=i*Math.PI/4;
+      ctx.beginPath();ctx.moveTo(Math.cos(a)*18,34+Math.sin(a)*18);ctx.lineTo(Math.cos(a)*28,34+Math.sin(a)*28);ctx.stroke();
+    }
+  }
+  ctx.restore();
+
+  // Right arm
+  ctx.save();ctx.translate(cx+22,cy+42+bob);ctx.rotate(-armSwing*Math.PI/180*.5);
+  ctx.fillStyle='#e8b84b';
+  ctx.beginPath();ctx.roundRect(-6,0,12,28,4);ctx.fill();
+  ctx.restore();
+
+  // Head
+  ctx.fillStyle='#f5c842';
+  ctx.beginPath();ctx.arc(cx,cy+bob,26,0,Math.PI*2);ctx.fill();
+
+  // Hair
+  ctx.fillStyle='#c87820';
+  ctx.beginPath();ctx.arc(cx,cy-14+bob,18,Math.PI,0);ctx.fill();
+  ctx.beginPath();ctx.arc(cx-18,cy-8+bob,8,Math.PI*.8,Math.PI*1.8);ctx.fill();
+  ctx.beginPath();ctx.arc(cx+18,cy-8+bob,8,Math.PI*1.2,Math.PI*2.2);ctx.fill();
+
+  // Eyes — blink every 120 frames
+  const blink = frame%120>115;
+  ctx.fillStyle='#1a1a1a';
+  if(blink){
+    ctx.fillRect(cx-14,cy-2+bob,10,2);
+    ctx.fillRect(cx+4,cy-2+bob,10,2);
+  } else {
+    ctx.beginPath();ctx.arc(cx-9,cy-2+bob,5,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(cx+9,cy-2+bob,5,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#fff';
+    ctx.beginPath();ctx.arc(cx-7,cy-4+bob,2,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(cx+11,cy-4+bob,2,0,Math.PI*2);ctx.fill();
+  }
+
+  // Smile
+  ctx.strokeStyle='#1a1a1a';ctx.lineWidth=2;ctx.lineCap='round';
+  ctx.beginPath();ctx.arc(cx,cy+8+bob,8,0.3,Math.PI-.3);ctx.stroke();
+
+  // Blush
+  ctx.fillStyle='rgba(255,100,80,.3)';
+  ctx.beginPath();ctx.ellipse(cx-17,cy+6+bob,7,5,0,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.ellipse(cx+17,cy+6+bob,7,5,0,0,Math.PI*2);ctx.fill();
+
+  ctx.restore();
+}
+
+// ── LOAD SETTINGS (background + character)
+async function loadSettings(){
+  let s={};
+  try{
+    const data=await(await fetch('api.php?action=get_settings')).json();
+    s=data.settings||{};
+    // Apply background
+    const bgMap={
+      'dark-grain':   '#080808',
+      'deep-navy':    'linear-gradient(135deg,#070b14 0%,#0a0f1e 50%,#060912 100%)',
+      'warm-dark':    'linear-gradient(135deg,#0d0a07 0%,#110e08 50%,#0a0807 100%)',
+      'dark-forest':  'linear-gradient(135deg,#050a07 0%,#080e0a 50%,#040806 100%)',
+      'vignette':     'radial-gradient(ellipse at center,#141414 0%,#050505 100%)',
+      'dark-purple':  'linear-gradient(135deg,#0a0810 0%,#0d0a18 50%,#080610 100%)',
+      'geometric':    '#090909',
+      'deep-red':     'linear-gradient(135deg,#0d0707 0%,#110808 50%,#0a0505 100%)',
+      'concrete':     '#0c0c0c',
+    };
+    const bg=bgMap[s.background]||'#080808';
+    document.body.style.background=bg;
+    // Geometric grid overlay
+    if(s.background==='geometric'){
+      const overlay=document.createElement('div');
+      overlay.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.04;background-image:repeating-linear-gradient(45deg,#fff 0,#fff 1px,transparent 0,transparent 50%);background-size:20px 20px';
+      document.body.appendChild(overlay);
+    }
+    // Update CSS variable for consistency
+    document.documentElement.style.setProperty('--black', bg.startsWith('#')?bg:'#080808');
+    // Apply lens color
+    const lensColor=s.lens_color||'dark';
+    const lensColors={
+      dark:'radial-gradient(circle at 35% 35%,#2a2a3a,#050508 60%)',
+      gold:'radial-gradient(circle at 35% 35%,#3a2a0a,#150a00 60%)',
+      blue:'radial-gradient(circle at 35% 35%,#0a1a3a,#020510 60%)',
+      red: 'radial-gradient(circle at 35% 35%,#3a0a0a,#150000 60%)',
+      green:'radial-gradient(circle at 35% 35%,#0a2a0a,#001500 60%)',
+    };
+    const lensEl=document.querySelector('.lens');
+    if(lensEl) lensEl.style.background=lensColors[lensColor]||lensColors.dark;
+    // Apply iris speed
+    const lensSpd=s.lens_speed||'normal';
+    const irisMask=document.querySelector('.iris-mask');
+    if(irisMask){const dur={slow:'2.8s',normal:'1.5s',fast:'.7s'};irisMask.style.animationDuration=dur[lensSpd]||'1.5s';}
+    // Apply flare color
+    const flareEl=document.querySelector('.lens-flare');
+    if(flareEl){
+      const flare=s.lens_flare||'gold';
+      if(flare==='none'){flareEl.style.display='none';}
+      else{
+        const fc={gold:'rgba(212,168,83,.7)',white:'rgba(255,255,255,.7)',blue:'rgba(100,160,255,.7)'};
+        flareEl.style.background=fc[flare]||fc.gold;
+        flareEl.style.boxShadow=`0 0 25px 10px ${(fc[flare]||fc.gold).replace('.7','.25')}`;
+      }
+    }
+    // Apply intro duration
+    const introDur=parseInt(s.intro_duration||'3000');
+    window._introDuration=introDur;
+  }catch(e){}
+  return s;
+}
+
+// Scroll observer
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis');});
+},{threshold:.1});
+['featHeader','featGrid','catTitle','catGrid'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el)obs.observe(el);
+});
+
+async function loadPhotos(){
+  try{
+    const data=await(await fetch(API+'?action=get_list')).json();
+    allPhotos=data.photos||[];
+    const featured=allPhotos.find(p=>p.is_featured==1)||allPhotos[0];
+    if(featured) document.getElementById('heroImg').src=API+'?action=get_image&id='+featured.id;
+    renderFeatured();
+    renderCategories();
+  }catch(e){
+    document.getElementById('featGrid').innerHTML='<div class="feat-loading" style="color:#c07070">Error loading</div>';
+  }
+}
+
+function renderFeatured(){
+  const grid=document.getElementById('featGrid');
+  const show=allPhotos.slice(0,5);
+  if(!show.length){grid.innerHTML='<div class="feat-loading">Koi photo nahi.</div>';return;}
+  grid.innerHTML=show.map(p=>`
+    <div class="feat-item" onclick="openLightbox(${p.id},'${p.title.replace(/'/g,"\\'")}')">
+      <img src="${API}?action=get_image&id=${p.id}" alt="${p.title}" loading="lazy">
+      <div class="feat-overlay"></div>
+      <div class="feat-caption">
+        <div class="feat-caption-title">${p.title}</div>
+        <div class="feat-caption-cat">${p.category}</div>
+      </div>
+    </div>`).join('');
+}
+
+function renderCategories(){
+  const cats=[...new Set(allPhotos.map(p=>p.category))];
+  const grid=document.getElementById('catGrid');
+  grid.innerHTML=cats.map(cat=>{
+    const photo=allPhotos.find(p=>p.category===cat);
+    const count=allPhotos.filter(p=>p.category===cat).length;
+    return `<a href="portfolio.html?cat=${encodeURIComponent(cat)}" class="cat-card">
+      ${photo?`<img src="${API}?action=get_image&id=${photo.id}" alt="${cat}" loading="lazy">`:'<div style="width:100%;height:180px;background:#161616"></div>'}
+      <div class="cat-card-label">
+        <div class="cat-card-name">${cat}</div>
+        <div class="cat-card-count">${count} Photos</div>
+      </div>
+    </a>`;
+  }).join('');
+}
+
+function openLightbox(id,title){
+  document.getElementById('lbImg').src=API+'?action=get_image&id='+id;
+  document.getElementById('lbCaption').textContent=title;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox(){document.getElementById('lightbox').classList.remove('open');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLightbox();});
+document.getElementById('lightbox').addEventListener('click',e=>{if(e.target===document.getElementById('lightbox'))closeLightbox();});
+
+
+// FIX: Handle back button blank page
+window.addEventListener('pageshow', function(e) {
+  document.querySelectorAll('.page-transition').forEach(el => {
+    el.style.animation = 'none';
+    el.style.transform = 'scaleY(0)';
+    el.style.visibility = 'hidden';
+  });
+  const main = document.getElementById('main');
+  if (main) { main.classList.add('show'); }
+  const nav = document.querySelector('nav');
+  if (nav) { nav.classList.add('show'); }
+});
+
+</script>
+<script src="cursor-particles.js"></script>
+<script src="js/page-transitions.js"></script>
+</body>
+</html>
